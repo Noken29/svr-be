@@ -1,5 +1,6 @@
 package com.noken29.svrbe.domain;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -7,6 +8,7 @@ import org.springframework.data.rest.core.annotation.RestResource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -26,7 +28,11 @@ public class RoutingSession {
     private Date lastSaved;
 
     @EqualsAndHashCode.Exclude
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = {
+            CascadeType.MERGE,
+            CascadeType.REFRESH,
+            CascadeType.DETACH
+    })
     @JoinTable(
             name = "vehicle_routing_session",
             joinColumns = @JoinColumn(name = "routing_session_id"),
@@ -41,6 +47,14 @@ public class RoutingSession {
             orphanRemoval = true
     )
     private List<Customer> customers;
+
+    @EqualsAndHashCode.Exclude
+    @OneToOne(
+            mappedBy = "routingSession",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private Depot depot;
 
     @EqualsAndHashCode.Exclude
     @OneToMany(

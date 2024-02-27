@@ -1,4 +1,4 @@
-package com.noken29.svrbe.api;
+package com.noken29.svrbe.api.controllers;
 
 import com.noken29.svrbe.domain.FuelType;
 import com.noken29.svrbe.domain.Vehicle;
@@ -33,7 +33,6 @@ public class VehicleController {
 
     @PostMapping
     public ResponseEntity<List<Vehicle>> saveAll(@RequestBody List<Vehicle> vehicles) {
-        vehicleRepository.deleteAll();
         return new ResponseEntity<>(vehicleRepository.saveAll(vehicles), HttpStatus.CREATED);
     }
 

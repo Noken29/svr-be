@@ -1,4 +1,4 @@
-package com.noken29.svrbe.domain;
+package com.noken29.svrbe.domain.view;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

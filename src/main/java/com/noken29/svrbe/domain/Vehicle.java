@@ -19,19 +19,19 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "fuel_type_id")
+    @JoinColumn(name = "fuel_type_id", nullable = false)
     private FuelType fuelType;
 
-    @Column(name = "fuel_consumption")
+    @Column(name = "fuel_consumption", nullable = false)
     private double fuelConsumption;
 
-    @Column(name = "carrying_capacity")
+    @Column(name = "carrying_capacity", nullable = false)
     private double carryingCapacity;
 
-    @Column(name = "volume")
+    @Column(name = "volume", nullable = false)
     private double volume;
 }

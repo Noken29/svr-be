@@ -23,20 +23,21 @@ public class Package {
     @ToString.Exclude
     @JoinColumn(
             name = "customer_id",
-            referencedColumnName = "id"
+            referencedColumnName = "id",
+            nullable = false
     )
     @JsonIgnore
     private Customer customer;
 
-    @Column(name = "type", length = 48)
+    @Column(name = "type", length = 48, nullable = false)
     private String type;
 
-    @Column(name = "weight")
+    @Column(name = "weight", nullable = false)
     private double weight;
 
-    @Column(name = "volume")
+    @Column(name = "volume", nullable = false)
     private double volume;
 
-    @Column(name = "cost")
+    @Column(name = "cost", nullable = false)
     private double cost;
 }

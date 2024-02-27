@@ -1,8 +1,10 @@
-package com.noken29.svrbe.api;
+package com.noken29.svrbe.api.controllers;
 
+import com.noken29.svrbe.api.RoutingSessionAPI;
 import com.noken29.svrbe.domain.RoutingSession;
-import com.noken29.svrbe.domain.RoutingSessionInfo;
+import com.noken29.svrbe.domain.view.RoutingSessionInfo;
 import com.noken29.svrbe.domain.bean.RoutingSessionBean;
+import com.noken29.svrbe.domain.view.RoutingSessionView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,17 +20,17 @@ public class RoutingSessionController {
     private RoutingSessionAPI routingSessionAPI;
 
     @GetMapping("/{id}")
-    public ResponseEntity<RoutingSession> get(@PathVariable Long id) {
+    public ResponseEntity<RoutingSessionView> get(@PathVariable Long id) {
         return new ResponseEntity<>(routingSessionAPI.getById(id), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<RoutingSession> create(@RequestBody RoutingSessionBean routingSessionBean) {
+    public ResponseEntity<RoutingSessionView> create(@RequestBody RoutingSessionBean routingSessionBean) {
         return new ResponseEntity<>(routingSessionAPI.create(routingSessionBean), HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<RoutingSession> update(@PathVariable Long id, @RequestBody RoutingSessionBean routingSessionBean) {
+    public ResponseEntity<RoutingSessionView> update(@PathVariable Long id, @RequestBody RoutingSessionBean routingSessionBean) {
         return new ResponseEntity<>(routingSessionAPI.update(id, routingSessionBean), HttpStatus.CREATED);
     }
 

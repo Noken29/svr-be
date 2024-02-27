@@ -11,9 +11,9 @@ public class FuelType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "description", length = 48)
+    @Column(name = "description", length = 48, nullable = false)
     private String description;
 
-    @Column(name = "cost")
+    @Column(name = "cost", nullable = false)
     private double cost;
 }
