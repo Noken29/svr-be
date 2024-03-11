@@ -23,6 +23,9 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
     @Autowired
     private VehicleService vehicleService;
 
+    @Autowired
+    private DistanceCalculator distanceCalculator;
+
     @Override
     public RoutingSessionView getById(Long id) {
         return buildRoutingSessionView(routingSessionRepository.getReferenceById(id));
@@ -31,6 +34,7 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
     @Override
     public RoutingSessionView create(RoutingSessionBean bean) {
         RoutingSession routingSession = buildRoutingSession(null, bean);
+        routingSession.getDepot().setRoutingSession(routingSession);
         routingSession.getCustomers().forEach(c -> c.setRoutingSession(routingSession));
         routingSession.getCustomers().forEach(c -> c.getPackages().forEach(p -> p.setCustomer(c)));
         routingSession.setVehicles(vehicleService.getVehiclesByIds(bean.getVehicleIds()));
@@ -40,6 +44,7 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
     @Override
     public RoutingSessionView update(Long routingSessionId, RoutingSessionBean bean) {
         RoutingSession routingSession = buildRoutingSession(routingSessionId, bean);
+        routingSession.getDepot().setRoutingSession(routingSession);
         routingSession.getCustomers().forEach(c -> c.setRoutingSession(routingSession));
         routingSession.getCustomers().forEach(c -> c.getPackages().forEach(p -> p.setCustomer(c)));
         routingSession.setVehicles(vehicleService.getVehiclesByIds(bean.getVehicleIds()));
@@ -63,7 +68,12 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
                 .id(routingSessionId)
                 .description(bean.getDescription())
                 .lastSaved(new Date())
-                .depot(bean.getDepot())
+                .depot(Depot.builder()
+                        .id(bean.getDepot().getId())
+                        .addressLines(bean.getDepot().getAddressLines())
+                        .latitude(bean.getDepot().getLatitude())
+                        .longitude(bean.getDepot().getLongitude())
+                        .build())
                 .customers(bean.getCustomers().stream().map(
                         c -> Customer.builder()
                                 .name(c.getName())
@@ -86,6 +96,7 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
     }
 
     private RoutingSessionView buildRoutingSessionView(RoutingSession routingSession) {
+        distanceCalculator.calculate(routingSession.getCustomers());
         return RoutingSessionView.builder()
                 .id(routingSession.getId())
                 .description(routingSession.getDescription())

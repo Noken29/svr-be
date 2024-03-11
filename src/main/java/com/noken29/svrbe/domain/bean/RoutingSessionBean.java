@@ -9,7 +9,7 @@ import java.util.Set;
 @Data
 public class RoutingSessionBean {
     private String description;
+    private Depot depot;
     private Set<Long> vehicleIds;
     private List<CustomerBean> customers;
-    private Depot depot;
 }
