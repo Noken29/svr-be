@@ -19,7 +19,7 @@ public class RoutingSessionView {
     private Long id;
     private String description;
     private Set<Long> vehicleIds;
-    private List<Customer> customers;
+    private Set<Customer> customers;
     private Depot depot;
-    private List<Solution> solutions;
+    private Set<Solution> solutions;
 }

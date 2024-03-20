@@ -1,14 +1,9 @@
 package com.noken29.svrbe.domain;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.rest.core.annotation.RestResource;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Builder
@@ -38,7 +33,7 @@ public class RoutingSession {
             joinColumns = @JoinColumn(name = "routing_session_id"),
             inverseJoinColumns = @JoinColumn(name = "vehicle_id")
     )
-    private List<Vehicle> vehicles;
+    private Set<Vehicle> vehicles;
 
     @EqualsAndHashCode.Exclude
     @OneToMany(
@@ -46,7 +41,7 @@ public class RoutingSession {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Customer> customers;
+    private Set<Customer> customers;
 
     @EqualsAndHashCode.Exclude
     @OneToOne(
@@ -56,10 +51,11 @@ public class RoutingSession {
     )
     private Depot depot;
 
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(
             mappedBy = "routingSession",
             cascade = CascadeType.ALL
     )
-    private List<Solution> solutions = new ArrayList<>();
+    private Set<Solution> solutions = new HashSet<>();
 }

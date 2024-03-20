@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @EnableJpaRepositories("com.noken29.svrbe.repository")
 @EntityScan("com.noken29.svrbe.domain")
-@SpringBootApplication(scanBasePackages = "com.noken29.svrbe")
+@SpringBootApplication(scanBasePackages = "com.noken29")
 public class SvrBeApplication {
 
 	public static void main(String[] args) {

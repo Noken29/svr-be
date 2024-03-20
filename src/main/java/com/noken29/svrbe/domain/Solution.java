@@ -1,13 +1,15 @@
 package com.noken29.svrbe.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "solution")
 public class Solution {
@@ -15,6 +17,7 @@ public class Solution {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "routing_session_id", referencedColumnName = "id", nullable = false)
     private RoutingSession routingSession;
@@ -22,8 +25,8 @@ public class Solution {
     @Column(name = "created", nullable = false)
     private Date created;
 
-    // @Column(name = "routes", length = 256 * 1024 * 1024, nullable = false)
-    // @ToString.Exclude
-    // @EqualsAndHashCode.Exclude
-    // private Json routes;
+    @Column(name = "data", length = 256 * 2048 * 2048, nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private String data;
 }

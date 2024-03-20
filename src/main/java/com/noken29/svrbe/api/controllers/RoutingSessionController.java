@@ -1,7 +1,6 @@
 package com.noken29.svrbe.api.controllers;
 
 import com.noken29.svrbe.api.RoutingSessionAPI;
-import com.noken29.svrbe.domain.RoutingSession;
 import com.noken29.svrbe.domain.view.RoutingSessionInfo;
 import com.noken29.svrbe.domain.bean.RoutingSessionBean;
 import com.noken29.svrbe.domain.view.RoutingSessionView;
@@ -21,7 +20,7 @@ public class RoutingSessionController {
 
     @GetMapping("/{id}")
     public ResponseEntity<RoutingSessionView> get(@PathVariable Long id) {
-        return new ResponseEntity<>(routingSessionAPI.getById(id), HttpStatus.OK);
+        return new ResponseEntity<>(routingSessionAPI.getViewById(id), HttpStatus.OK);
     }
 
     @PostMapping
@@ -37,6 +36,16 @@ public class RoutingSessionController {
     @GetMapping("/all")
     public ResponseEntity<List<RoutingSessionInfo>> all() {
         return new ResponseEntity<>(routingSessionAPI.getInfo(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/routes")
+    public ResponseEntity<Boolean> makeRoutes(@PathVariable Long id) {
+        return new ResponseEntity<>(routingSessionAPI.makeRoutes(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/{id}/routes/status")
+    public ResponseEntity<Boolean> jobIsFinished(@PathVariable Long id) {
+        return new ResponseEntity<>(routingSessionAPI.jobIsFinished(id), HttpStatus.OK);
     }
 
 }

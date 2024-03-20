@@ -9,12 +9,18 @@ import java.util.List;
 
 public interface RoutingSessionAPI {
 
-    RoutingSessionView getById(Long id);
+    RoutingSession getById(Long id);
+
+    RoutingSessionView getViewById(Long id);
 
     RoutingSessionView create(RoutingSessionBean bean);
 
     RoutingSessionView update(Long routingSessionId, RoutingSessionBean bean);
 
     List<RoutingSessionInfo> getInfo();
+
+    Boolean makeRoutes(Long id);
+
+    Boolean jobIsFinished(Long id);
 
 }

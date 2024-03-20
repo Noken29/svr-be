@@ -57,7 +57,7 @@ create table solution
     id                 bigint auto_increment primary key,
     routing_session_id bigint not null,
     created            datetime(6) not null,
-    routes             json null,
+    data               json null,
 
     constraint FK_routing_session__solution
     foreign key (routing_session_id) references routing_session (id)
