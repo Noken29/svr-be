@@ -18,8 +18,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.function.Function;
 
 @Component
@@ -34,12 +32,11 @@ public class RoutingService {
     @Value("#{${aco-solver.c-params}}")
     private Map<String, Double> cParams;
 
-    @Async
-    public Future<SolutionData> makeRoutes(RoutingSession routingSession) {
+    public SolutionData makeRoutes(RoutingSession routingSession) {
         var acoContext = new AcoContext(
                 buildSDVRPInstance(routingSession),
                 1.0,
-                20,
+                30,
                 0.3,
                 new HashMap<>(vParams),
                 new HashMap<>(cParams),
@@ -47,8 +44,7 @@ public class RoutingService {
                 3
         );
         var acoSolver = new AcoSolver(acoContext);
-        var solutionData = buildSolutionsData(routingSession, acoSolver.makeActions(2000000, 5, 50));
-        return CompletableFuture.completedFuture(solutionData);
+        return buildSolutionsData(routingSession, acoSolver.makeActions(4000, 5, 50));
     }
 
     private SolutionData buildSolutionsData(RoutingSession routingSession, VrpSolution solution) {

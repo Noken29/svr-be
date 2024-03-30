@@ -1,6 +1,7 @@
 package com.noken29.svrbe.api;
 
 import com.noken29.svrbe.domain.RoutingSession;
+import com.noken29.svrbe.domain.Solution;
 import com.noken29.svrbe.domain.view.RoutingSessionInfo;
 import com.noken29.svrbe.domain.bean.RoutingSessionBean;
 import com.noken29.svrbe.domain.view.RoutingSessionView;
@@ -19,8 +20,6 @@ public interface RoutingSessionAPI {
 
     List<RoutingSessionInfo> getInfo();
 
-    Boolean makeRoutes(Long id);
-
-    Boolean jobIsFinished(Long id);
+    boolean makeRoutes(Long id);
 
 }

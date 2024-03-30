@@ -43,8 +43,7 @@ public class DistanceCalculator {
                 for (String destinationKey : originsDestinations.keySet()) {
                     int originIndex = Arrays.asList(originsDestinationsArray).indexOf(originsDestinations.get(originKey));
                     int destinationIndex = Arrays.asList(originsDestinationsArray).indexOf(originsDestinations.get(destinationKey));
-                    long distance = gDistanceMatrix.rows[originIndex].elements[destinationIndex].distance.inMeters; // Distance in kilometers*/
-                    System.out.println("Distance from " + originKey + " to " + destinationKey + ": " + distance + " meters");
+                    long distance = gDistanceMatrix.rows[originIndex].elements[destinationIndex].distance.inMeters;
                     distanceMatrix.get(i).add(BigDecimal.valueOf(distance).divide(BigDecimal.valueOf(1000), RoundingMode.HALF_UP).doubleValue());
                 }
                 i++;

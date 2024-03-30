@@ -1,9 +1,11 @@
 package com.noken29.svrbe.api.controllers;
 
 import com.noken29.svrbe.api.RoutingSessionAPI;
+import com.noken29.svrbe.domain.Solution;
 import com.noken29.svrbe.domain.view.RoutingSessionInfo;
 import com.noken29.svrbe.domain.bean.RoutingSessionBean;
 import com.noken29.svrbe.domain.view.RoutingSessionView;
+import com.noken29.svrbe.repository.SolutionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +19,9 @@ public class RoutingSessionController {
 
     @Autowired
     private RoutingSessionAPI routingSessionAPI;
+
+    @Autowired
+    private SolutionRepository solutionRepository;
 
     @GetMapping("/{id}")
     public ResponseEntity<RoutingSessionView> get(@PathVariable Long id) {
@@ -38,14 +43,14 @@ public class RoutingSessionController {
         return new ResponseEntity<>(routingSessionAPI.getInfo(), HttpStatus.OK);
     }
 
-    @GetMapping("/{id}/routes")
+    @GetMapping("/routes/{id}")
     public ResponseEntity<Boolean> makeRoutes(@PathVariable Long id) {
-        return new ResponseEntity<>(routingSessionAPI.makeRoutes(id), HttpStatus.OK);
+        return new ResponseEntity<>(routingSessionAPI.makeRoutes(id), HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}/routes/status")
-    public ResponseEntity<Boolean> jobIsFinished(@PathVariable Long id) {
-        return new ResponseEntity<>(routingSessionAPI.jobIsFinished(id), HttpStatus.OK);
+    @GetMapping("/routes/all/{id}")
+    public ResponseEntity<List<Solution>> getRoutes(@PathVariable Long id) {
+        return new ResponseEntity<>(solutionRepository.getAllByRoutingSessionId(id), HttpStatus.OK);
     }
 
 }

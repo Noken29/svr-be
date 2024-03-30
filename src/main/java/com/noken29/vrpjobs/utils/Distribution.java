@@ -13,7 +13,7 @@ public class Distribution {
 
     public static int discrete(List<BigDecimal> weights, BigDecimal total) {
         if (Objects.equals(total, BigDecimal.ZERO))
-            throw new IllegalArgumentException("Nothing to choose. Sum of weight is equal to 0.");
+            throw new IllegalArgumentException("Nothing to choose. Sum of weights is equal to 0.");
 
         BigDecimal sum = BigDecimal.ZERO;
         int index = 0;

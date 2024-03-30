@@ -21,5 +21,5 @@ public class RoutingSessionView {
     private Set<Long> vehicleIds;
     private Set<Customer> customers;
     private Depot depot;
-    private Set<Solution> solutions;
+    private boolean haveSolutions;
 }

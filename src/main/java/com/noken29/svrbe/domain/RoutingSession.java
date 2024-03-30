@@ -2,6 +2,7 @@ package com.noken29.svrbe.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Formula;
 
 import java.util.*;
 
@@ -58,4 +59,7 @@ public class RoutingSession {
             cascade = CascadeType.ALL
     )
     private Set<Solution> solutions = new HashSet<>();
+
+    @Formula("(SELECT IF(COUNT(s.id) = 0, FALSE, TRUE) FROM routing_session rs JOIN solution s ON s.routing_session_id = rs.id WHERE rs.id = id)")
+    private boolean haveSolutions;
 }

@@ -11,7 +11,6 @@ import com.noken29.svrbe.repository.RoutingSessionRepository;
 import com.noken29.svrbe.repository.SolutionRepository;
 import com.noken29.svrbe.repository.VehicleRepository;
 import com.noken29.svrbe.service.routing.RoutingService;
-import com.noken29.svrbe.service.routing.SolutionData;
 import jakarta.transaction.Transactional;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,8 +35,6 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
 
     @Autowired
     private RoutingService routingService;
-
-    private final Map<Long, Future<SolutionData>> activeJobs = new HashMap<>();
 
     @Override
     public RoutingSession getById(Long id) {
@@ -128,18 +124,16 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
                 .vehicleIds(routingSession.getVehicles().stream().map(Vehicle::getId).collect(Collectors.toSet()))
                 .customers(routingSession.getCustomers())
                 .depot(routingSession.getDepot())
-                .solutions(routingSession.getSolutions())
+                .haveSolutions(routingSession.isHaveSolutions())
                 .build();
     }
 
     @Override
-    public Boolean makeRoutes(Long id) {
-        if (activeJobs.get(id) != null)
-            return false;
+    public boolean makeRoutes(Long id) {
         log.info("Making routes for RS with id: {}", id);
         var routingSession = getById(id);
-        activeJobs.put(id, routingService.makeRoutes(routingSession));
-        /*var builder = new GsonBuilder()
+        var solutionData = routingService.makeRoutes(routingSession);
+        var builder = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .setPrettyPrinting()
                 .setDateFormat("MM/dd/yy HH:mm:ss")
@@ -147,19 +141,9 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
         var solution = Solution.builder()
                 .created(new Date())
                 .routingSession(routingSession)
-                .data(builder.toJson(data))
+                .data(builder.toJson(solutionData))
                 .build();
-        solutionRepository.save(solution);*/
+        solutionRepository.save(solution);
         return true;
     }
-
-    @SneakyThrows
-    @Override
-    public Boolean jobIsFinished(Long id) {
-        boolean finished = activeJobs.get(id) == null || activeJobs.get(id).isDone();
-        log.info(activeJobs.get(id).get().toString());
-        return true;
-    }
-
-
 }
