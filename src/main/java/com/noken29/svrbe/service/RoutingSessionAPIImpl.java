@@ -89,7 +89,7 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
         return RoutingSession.builder()
                 .id(routingSessionId)
                 .description(bean.getDescription())
-                .lastSaved(new Date())
+                .lastSaved(bean.getLastSaved())
                 .depot(Depot.builder()
                         .id(bean.getDepot().getId())
                         .addressLines(bean.getDepot().getAddressLines())
@@ -124,6 +124,7 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
                 .vehicleIds(routingSession.getVehicles().stream().map(Vehicle::getId).collect(Collectors.toSet()))
                 .customers(routingSession.getCustomers())
                 .depot(routingSession.getDepot())
+                .lastSaved(routingSession.getLastSaved())
                 .haveSolutions(routingSession.isHaveSolutions())
                 .build();
     }
