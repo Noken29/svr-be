@@ -109,6 +109,15 @@ public class AcoContext {
         return PackageChoosingStrategy.values()[Distribution.discrete(weights, weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add))];
     }
 
+    public boolean requestNewRoute(double routeLength, int numRoutes, int deliveredCustomers, int numCustomers) {
+        double routeLengthFactor = routeLength / (routeLength + 1);
+        double numRoutesFactor = numRoutes / (double) (numRoutes + 1);
+        double numCustomersFactor = deliveredCustomers / (double) numCustomers;
+
+        double randomValue = Math.random();
+        return randomValue <= routeLengthFactor && (randomValue >= numRoutesFactor || randomValue >= numCustomersFactor);
+    }
+
     public VrpCustomer chooseCustomer(Set<VrpCustomer> deliveredCustomers, VrpCustomer lastSelectedCustomer, VrpVehicle selectedVehicle) {
         List<BigDecimal> weights = new ArrayList<>();
         for (String cIndex: problem.getGraph().getCustomersIndexes()) {
@@ -148,7 +157,7 @@ public class AcoContext {
     }
 
     public void updateParams(VrpSolution globalOptimalSolution, VrpSolution localOptimalSolution) {
-        double vcDiff = localOptimalSolution.getTotalCost() / globalOptimalSolution.getTotalCost();
+        double vcDiff = localOptimalSolution.calculateVehiclesFitness() / globalOptimalSolution.calculateVehiclesFitness();
         for (var entry : vParams.entrySet()) {
             String key = entry.getKey();
             Double paramValue = entry.getValue();
@@ -167,7 +176,7 @@ public class AcoContext {
             }
         }
 
-        double ccDiff = localOptimalSolution.getTotalLength() / globalOptimalSolution.getTotalLength();
+        double ccDiff = localOptimalSolution.calculateCustomersFitness() / globalOptimalSolution.calculateCustomersFitness();
         for (var entry : cParams.entrySet()) {
             String key = entry.getKey();
             double paramValue = entry.getValue();

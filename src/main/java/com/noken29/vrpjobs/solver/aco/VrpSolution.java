@@ -28,4 +28,16 @@ public class VrpSolution {
     public int getNumRoutes() {
         return routes.size();
     }
+
+    public double calculateTotalFitness() {
+        return calculateVehiclesFitness() * calculateCustomersFitness();
+    }
+
+    public double calculateVehiclesFitness() {
+        return totalCost;
+    }
+
+    public double calculateCustomersFitness() {
+        return totalLength;
+    }
 }

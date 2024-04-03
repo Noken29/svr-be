@@ -42,7 +42,7 @@ public class RoutingSession {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private Set<Customer> customers;
+    private List<Customer> customers;
 
     @EqualsAndHashCode.Exclude
     @OneToOne(

@@ -5,9 +5,6 @@ import com.google.gson.annotations.Expose;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
-
-
 @Data
 @Builder
 @AllArgsConstructor

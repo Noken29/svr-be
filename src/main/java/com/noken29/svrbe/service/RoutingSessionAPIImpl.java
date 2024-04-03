@@ -12,7 +12,6 @@ import com.noken29.svrbe.repository.SolutionRepository;
 import com.noken29.svrbe.repository.VehicleRepository;
 import com.noken29.svrbe.service.routing.RoutingService;
 import jakarta.transaction.Transactional;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,16 +103,16 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
                                 .specialRequirements(c.getSpecialRequirements())
                                 .latitude(c.getLatitude())
                                 .longitude(c.getLongitude())
-                                .packages(c.getPackages().stream().map(
+                                .packages(new LinkedHashSet<>(c.getPackages().stream().map(
                                         p -> Package.builder()
                                                 .type(p.getType())
                                                 .weight(p.getWeight())
                                                 .volume(p.getVolume())
                                                 .cost(p.getCost())
                                                 .build()
-                                ).collect(Collectors.toSet()))
+                                ).toList()))
                                 .build()
-                ).collect(Collectors.toSet()))
+                ).toList())
                 .build();
     }
 
@@ -134,6 +133,7 @@ public class RoutingSessionAPIImpl implements RoutingSessionAPI {
         log.info("Making routes for RS with id: {}", id);
         var routingSession = getById(id);
         var solutionData = routingService.makeRoutes(routingSession);
+        log.info("Done making routes for RS with id: {}", id);
         var builder = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
                 .setPrettyPrinting()

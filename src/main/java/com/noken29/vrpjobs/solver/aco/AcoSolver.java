@@ -23,13 +23,13 @@ public class AcoSolver {
         int stagnationFactor = 0;
 
         for (int i = 0; i <= times; i++) {
-            List<VrpSolution> solutions = new ArrayList<>();
+            List<VrpSolution> solutions = new ArrayList<>(context.getNumSolutions() + 1);
             for (int j = 0; j < context.getNumSolutions(); j++) {
                 solutions.add(generateSolution(bannedVehicles));
             }
-            solutions.sort(Comparator.comparing(VrpSolution::getTotalCost));
+            solutions.sort(Comparator.comparing(VrpSolution::calculateTotalFitness));
             calculateScoresAndUpdatePheromone(solutions.subList(0, kBest));
-            if (solutions.get(0).getTotalCost() < globallyOptimalSolution.getTotalCost()) {
+            if (solutions.get(0).calculateTotalFitness() < globallyOptimalSolution.calculateTotalFitness()) {
                 globallyOptimalSolution = solutions.get(0);
                 stagnationFactor = 0;
             } else if (stagnationThreshold != -1) {
@@ -51,6 +51,8 @@ public class AcoSolver {
 
         Set<VrpCustomer> deliveredCustomers = new HashSet<>();
         Set<VrpPackage> deliveredPackages = new HashSet<>();
+
+        boolean requestingNewRoutesIsPossible = Math.random() <= 0.5;
 
         while (deliveredCustomers.size() != context.getProblem().getGraph().getCustomersIndexes().size()) {
             List<VrpCustomer> routeCustomers = new LinkedList<>();
@@ -96,6 +98,20 @@ public class AcoSolver {
 
             if (!vehicleFilled)
                 deliveredCustomers.add(routePrevCustomer);
+
+            if (requestingNewRoutesIsPossible
+                    && context.requestNewRoute(routeLength, routes.size(), deliveredCustomers.size(), context.getProblem().getGraph().getCustomersIndexes().size())) {
+                routes.add(new VrpRoute(
+                        routeVehicle,
+                        routeCustomers,
+                        routePackages,
+                        pcs,
+                        routePickedWeight,
+                        routePickedVolume,
+                        routeLength
+                ));
+                continue;
+            }
 
             while (!vehicleFilled && deliveredCustomers.size() != context.getProblem().getGraph().getCustomersIndexes().size()) {
                 VrpCustomer routeNextCustomer = context.chooseCustomer(deliveredCustomers, routePrevCustomer, routeVehicle);

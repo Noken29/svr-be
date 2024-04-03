@@ -20,7 +20,7 @@ public class SolutionData {
     @Expose
     private Depot depot;
     @Expose
-    private Set<Customer> customers;
+    private List<Customer> customers;
     @Expose
     private Set<Vehicle> vehicles;
     @Expose
