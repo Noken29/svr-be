@@ -27,9 +27,9 @@ public class AcoSolver {
             for (int j = 0; j < context.getNumSolutions(); j++) {
                 solutions.add(generateSolution(bannedVehicles));
             }
-            solutions.sort(Comparator.comparing(VrpSolution::calculateTotalFitness));
+            solutions.sort(Comparator.comparing(VrpSolution::getFitness));
             calculateScoresAndUpdatePheromone(solutions.subList(0, kBest));
-            if (solutions.get(0).calculateTotalFitness() < globallyOptimalSolution.calculateTotalFitness()) {
+            if (solutions.get(0).getFitness() < globallyOptimalSolution.getFitness()) {
                 globallyOptimalSolution = solutions.get(0);
                 stagnationFactor = 0;
             } else if (stagnationThreshold != -1) {
@@ -52,7 +52,7 @@ public class AcoSolver {
         Set<VrpCustomer> deliveredCustomers = new HashSet<>();
         Set<VrpPackage> deliveredPackages = new HashSet<>();
 
-        boolean requestingNewRoutesIsPossible = Math.random() <= 0.5;
+        boolean requestingNewRoutesIsPossible = Math.random() <= context.getProbabilityOfRequestingNewRoutes();
 
         while (deliveredCustomers.size() != context.getProblem().getGraph().getCustomersIndexes().size()) {
             List<VrpCustomer> routeCustomers = new LinkedList<>();
@@ -158,7 +158,7 @@ public class AcoSolver {
             ));
         }
 
-        return new VrpSolution(routes);
+        return context.getVrpSolutionFactory().build(routes);
     }
 
     private void calculateScoresAndUpdatePheromone(List<VrpSolution> solutions) {

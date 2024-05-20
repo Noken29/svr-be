@@ -43,6 +43,18 @@ public class RoutingService {
     @Value("#{${aco-solver.params-right-bound}}")
     private double PARAMS_RIGHT_BOUND = 3;
 
+    @Value("#{${aco-solver.probability-of-requesting-new-routes}}")
+    private double PROBABILITY_OF_REQUESTING_NEW_ROUTES = 0.5;
+
+    @Value("#{${aco-solver.s-params}}")
+    private Map<String, Double> S_PARAMS;
+
+    @Value("#{${aco-solver.num-routes-factor-length}}")
+    private double NUM_ROUTES_FACTOR_LENGTH;
+
+    @Value("#{${aco-solver.num-routes-factor-shift}}")
+    private double NUM_ROUTES_FACTOR_SHIFT;
+
     public SolutionData makeRoutes(RoutingSession routingSession) {
         var sdvrpInstance = buildSDVRPInstance(routingSession);
         var solverParameters = getAcoSolverParameters(sdvrpInstance);
@@ -54,7 +66,11 @@ public class RoutingService {
                 new HashMap<>(V_PARAMS),
                 new HashMap<>(C_PARAMS),
                 PARAMS_LEFT_BOUND,
-                PARAMS_RIGHT_BOUND
+                PARAMS_RIGHT_BOUND,
+                PROBABILITY_OF_REQUESTING_NEW_ROUTES,
+                S_PARAMS,
+                NUM_ROUTES_FACTOR_LENGTH,
+                NUM_ROUTES_FACTOR_SHIFT
         );
         var acoSolver = new AcoSolver(acoContext);
         return buildSolutionsData(

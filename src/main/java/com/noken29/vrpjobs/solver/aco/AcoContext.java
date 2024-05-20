@@ -2,9 +2,10 @@ package com.noken29.vrpjobs.solver.aco;
 
 import com.noken29.vrpjobs.model.VrpCustomer;
 import com.noken29.vrpjobs.model.SplitDeliveryVehicleRoutingProblem;
+import com.noken29.vrpjobs.model.VrpSolutionFactory;
 import com.noken29.vrpjobs.model.VrpVehicle;
 import com.noken29.vrpjobs.utils.ComplexKey;
-import com.noken29.vrpjobs.utils.Distribution;
+import com.noken29.vrpjobs.utils.MathUtils;
 import lombok.Getter;
 
 import java.math.BigDecimal;
@@ -20,10 +21,15 @@ public class AcoContext {
     private final Map<String, Double> cParams;
     private final double paramsLeftBound;
     private final double paramsRightBound;
+    private final double probabilityOfRequestingNewRoutes;
+    private final Map<String, Double> sParams;
+    private final double numRoutesFactorLength;
+    private final double numRoutesFactorShift;
 
     private final Map<ComplexKey, Double> vehicleCustomerPheromone = new HashMap<>();
     private final Map<ComplexKey, Double> nodeNodePheromone = new HashMap<>();
     private final Map<PackageChoosingStrategy, Double> packageChoosingStrategyPheromone = new HashMap<>();
+    private final VrpSolutionFactory vrpSolutionFactory;
 
     public AcoContext(SplitDeliveryVehicleRoutingProblem problem,
                       double initPheromone,
@@ -32,7 +38,11 @@ public class AcoContext {
                       Map<String, Double> vParams,
                       Map<String, Double> cParams,
                       double paramsLeftBound,
-                      double paramsRightBound) {
+                      double paramsRightBound,
+                      double probabilityOfRequestingNewRoutes,
+                      Map<String, Double> sParams,
+                      double numRoutesFactorLength,
+                      double numRoutesFactorShift) {
         this.problem = problem;
         this.numSolutions = numSolutions;
         this.pheromoneEvaporation = pheromoneEvaporation;
@@ -40,8 +50,13 @@ public class AcoContext {
         this.cParams = cParams;
         this.paramsLeftBound = paramsLeftBound;
         this.paramsRightBound = paramsRightBound;
+        this.probabilityOfRequestingNewRoutes = probabilityOfRequestingNewRoutes;
+        this.sParams = sParams;
+        this.numRoutesFactorLength = numRoutesFactorLength;
+        this.numRoutesFactorShift = numRoutesFactorShift;
 
         fillPheromone(initPheromone);
+        this.vrpSolutionFactory = new VrpSolutionFactory(sParams, numRoutesFactorLength, numRoutesFactorShift);
     }
 
     private void fillPheromone(double initPheromone) {
@@ -81,7 +96,7 @@ public class AcoContext {
             }
         }
 
-        return problem.getGraph().getCustomer(problem.getGraph().getCustomersIndexes().get(Distribution.discrete(weights, weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add))));
+        return problem.getGraph().getCustomer(problem.getGraph().getCustomersIndexes().get(MathUtils.discreteDistribution(weights, weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add))));
     }
 
     public VrpVehicle chooseVehicle(VrpCustomer firstCustomer, double totalWeight, double totalVolume, Set<VrpVehicle> bannedVehicles) {
@@ -98,7 +113,7 @@ public class AcoContext {
             ));
         }
 
-        return problem.getVehicles().get(Distribution.discrete(weights, weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add)));
+        return problem.getVehicles().get(MathUtils.discreteDistribution(weights, weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add)));
     }
 
     public PackageChoosingStrategy choosePackageChoosingStrategy() {
@@ -106,12 +121,14 @@ public class AcoContext {
                 BigDecimal.valueOf(packageChoosingStrategyPheromone.get(PackageChoosingStrategy.WEIGHT)),
                 BigDecimal.valueOf(packageChoosingStrategyPheromone.get(PackageChoosingStrategy.VOLUME))
         );
-        return PackageChoosingStrategy.values()[Distribution.discrete(weights, weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add))];
+        return PackageChoosingStrategy.values()[MathUtils.discreteDistribution(weights, weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add))];
     }
 
     public boolean requestNewRoute(double routeLength, int numRoutes, int deliveredCustomers, int numCustomers) {
-        double routeLengthFactor = routeLength / (routeLength + 1);
-        double numRoutesFactor = numRoutes / (double) (numRoutes + 1);
+        // double routeLengthFactor = 1 / (1 + Math.exp((-routeLength / 80.0)) + 5);
+        double routeLengthFactor = MathUtils.sigmoid(routeLength, 80, 5);
+        // double numRoutesFactor = 1 / (1 + Math.exp((-numRoutes / 2.0) + 5));
+        double numRoutesFactor = MathUtils.sigmoid(numRoutes, 2, 5);
         double numCustomersFactor = deliveredCustomers / (double) numCustomers;
 
         double randomValue = Math.random();
@@ -133,7 +150,7 @@ public class AcoContext {
             }
         }
 
-        return problem.getGraph().getCustomer(problem.getGraph().getCustomersIndexes().get(Distribution.discrete(weights, weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add))));
+        return problem.getGraph().getCustomer(problem.getGraph().getCustomersIndexes().get(MathUtils.discreteDistribution(weights, weights.stream().reduce(BigDecimal.ZERO, BigDecimal::add))));
     }
 
     public void updatePheromone(Map<ComplexKey, Double> vehicleCustomerScores,
@@ -162,7 +179,7 @@ public class AcoContext {
             String key = entry.getKey();
             Double paramValue = entry.getValue();
 
-            int updateStrategy = Distribution.discrete(Arrays.asList(BigDecimal.valueOf(0.1), BigDecimal.valueOf(0.2), BigDecimal.valueOf(0.7)), BigDecimal.ONE);
+            int updateStrategy = MathUtils.discreteDistribution(Arrays.asList(BigDecimal.valueOf(0.1), BigDecimal.valueOf(0.2), BigDecimal.valueOf(0.7)), BigDecimal.ONE);
             switch (updateStrategy) {
                 case 0:
                     vParams.put(key, keepValueInBounds(paramValue + Math.random() - 0.5));
@@ -181,7 +198,7 @@ public class AcoContext {
             String key = entry.getKey();
             double paramValue = entry.getValue();
 
-            int updateStrategy = Distribution.discrete(Arrays.asList(BigDecimal.valueOf(0.1), BigDecimal.valueOf(0.2), BigDecimal.valueOf(0.7)), BigDecimal.ONE);
+            int updateStrategy = MathUtils.discreteDistribution(Arrays.asList(BigDecimal.valueOf(0.1), BigDecimal.valueOf(0.2), BigDecimal.valueOf(0.7)), BigDecimal.ONE);
             switch (updateStrategy) {
                 case 0:
                     cParams.put(key, keepValueInBounds(paramValue + Math.random() - 0.5));

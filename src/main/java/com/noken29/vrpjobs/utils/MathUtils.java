@@ -9,9 +9,9 @@ import java.util.Objects;
 import java.util.Set;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class Distribution {
+public class MathUtils {
 
-    public static int discrete(List<BigDecimal> weights, BigDecimal total) {
+    public static int discreteDistribution(List<BigDecimal> weights, BigDecimal total) {
         if (Objects.equals(total, BigDecimal.ZERO))
             throw new IllegalArgumentException("Nothing to choose. Sum of weights is equal to 0.");
 
@@ -24,5 +24,9 @@ public class Distribution {
                 index = i;
         }
         return index;
+    }
+
+    public static double sigmoid(double argument, double length, double shift) {
+        return 1.0 / (1.0 + Math.exp((-argument / length) + shift));
     }
 }
