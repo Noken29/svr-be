@@ -4,6 +4,7 @@ import com.noken29.vrpjobs.model.VrpCustomer;
 import com.noken29.vrpjobs.model.VrpPackage;
 import com.noken29.vrpjobs.model.VrpVehicle;
 import com.noken29.vrpjobs.utils.ComplexKey;
+import com.noken29.vrpjobs.utils.DebugUtils;
 
 import java.util.*;
 
@@ -14,13 +15,15 @@ public class AcoSolver {
         this.context = context;
     }
 
-    public VrpSolution makeActions(int times, int kBest, int stagnationThreshold) {
+    public VrpSolution makeActions(Long routingSessionId, int times, int kBest, int stagnationThreshold) {
         Map<VrpCustomer, Set<VrpVehicle>> bannedVehicles = new HashMap<>();
         context.getProblem().getGraph().getCustomersIndexes().forEach(e ->
                 bannedVehicles.put(context.getProblem().getGraph().getCustomer(e), new HashSet<>()));
 
         VrpSolution globallyOptimalSolution = generateSolution(bannedVehicles);
         int stagnationFactor = 0;
+
+        List<List<String>> statistics = new ArrayList<>(times + 1);
 
         for (int i = 0; i <= times; i++) {
             List<VrpSolution> solutions = new ArrayList<>(context.getNumSolutions() + 1);
@@ -29,18 +32,26 @@ public class AcoSolver {
             }
             solutions.sort(Comparator.comparing(VrpSolution::getFitness));
             calculateScoresAndUpdatePheromone(solutions.subList(0, kBest));
-            if (solutions.get(0).getFitness() < globallyOptimalSolution.getFitness()) {
-                globallyOptimalSolution = solutions.get(0);
+            VrpSolution locallyOptimalSolution = solutions.get(0);
+            if (locallyOptimalSolution.getFitness() < globallyOptimalSolution.getFitness()) {
+                globallyOptimalSolution = locallyOptimalSolution;
                 stagnationFactor = 0;
             } else if (stagnationThreshold != -1) {
                 stagnationFactor++;
             }
             if (stagnationFactor == stagnationThreshold) {
-                context.updateParams(globallyOptimalSolution, solutions.get(0));
+                context.updateParams(globallyOptimalSolution, locallyOptimalSolution);
                 stagnationFactor = 0;
             }
+            statistics.add(List.of(
+                    String.valueOf(i),
+                    String.valueOf(locallyOptimalSolution.getNumRoutes()),
+                    String.valueOf(locallyOptimalSolution.getTotalCost()),
+                    String.valueOf(locallyOptimalSolution.getTotalLength()),
+                    String.valueOf(locallyOptimalSolution.getFitness())
+            ));
         }
-
+        DebugUtils.writeToCSVFile("RSID_" + routingSessionId + "_", statistics);
         return globallyOptimalSolution;
     }
 

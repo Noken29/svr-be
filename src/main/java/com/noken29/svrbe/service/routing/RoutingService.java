@@ -76,6 +76,7 @@ public class RoutingService {
         return buildSolutionsData(
                 routingSession,
                 acoSolver.makeActions(
+                        routingSession.getId(),
                         solverParameters.get("times"),
                         solverParameters.get("kBest"),
                         solverParameters.get("stagnationThreshold")

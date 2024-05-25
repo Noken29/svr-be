@@ -125,9 +125,7 @@ public class AcoContext {
     }
 
     public boolean requestNewRoute(double routeLength, int numRoutes, int deliveredCustomers, int numCustomers) {
-        // double routeLengthFactor = 1 / (1 + Math.exp((-routeLength / 80.0)) + 5);
         double routeLengthFactor = MathUtils.sigmoid(routeLength, 80, 5);
-        // double numRoutesFactor = 1 / (1 + Math.exp((-numRoutes / 2.0) + 5));
         double numRoutesFactor = MathUtils.sigmoid(numRoutes, 2, 5);
         double numCustomersFactor = deliveredCustomers / (double) numCustomers;
 
