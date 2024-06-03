@@ -1,5 +1,6 @@
 package com.noken29.vrpjobs.solver.aco;
 
+import com.noken29.svrbe.domain.exception.RoutingException;
 import com.noken29.vrpjobs.model.VrpCustomer;
 import com.noken29.vrpjobs.model.VrpPackage;
 import com.noken29.vrpjobs.model.VrpVehicle;
@@ -75,7 +76,7 @@ public class AcoSolver {
             double routePickedVolume = 0.0;
 
             if (bannedVehicles.get(routePrevCustomer).size() == context.getProblem().getVehicles().size())
-                throw new IllegalStateException("Impossible to deliver customer with id: " + routePrevCustomer.getId());
+                throw new RoutingException("Unable to deliver one from clients.", routePrevCustomer.getId());
 
             VrpVehicle routeVehicle = context.chooseVehicle(routePrevCustomer, totalWeight, totalVolume, bannedVehicles.get(routePrevCustomer));
 

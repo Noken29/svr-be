@@ -2,6 +2,7 @@ package com.noken29.svrbe.api.controllers;
 
 import com.noken29.svrbe.api.RoutingSessionAPI;
 import com.noken29.svrbe.domain.Solution;
+import com.noken29.svrbe.domain.exception.RoutingException;
 import com.noken29.svrbe.domain.view.RoutingSessionInfo;
 import com.noken29.svrbe.domain.bean.RoutingSessionBean;
 import com.noken29.svrbe.domain.view.RoutingSessionView;
@@ -51,6 +52,11 @@ public class RoutingSessionController {
     @GetMapping("/routes/all/{id}")
     public ResponseEntity<List<Solution>> getRoutes(@PathVariable Long id) {
         return new ResponseEntity<>(solutionRepository.getAllByRoutingSessionId(id), HttpStatus.OK);
+    }
+
+    @ExceptionHandler(RoutingException.class)
+    public ResponseEntity<String> handleRoutingException(RoutingException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
 }
