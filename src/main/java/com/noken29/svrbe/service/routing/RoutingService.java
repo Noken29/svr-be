@@ -107,9 +107,9 @@ public class RoutingService {
         int numCustomers = sdvrpInstance.getGraph().getCustomersIndexes().size();
         int numPackages = sdvrpInstance.getNumPackages();
 
-        int times = 4000 - (numCustomers >= 30 ? 1000 : (numCustomers >= 15 ? 500 : 0)) - (numPackages >= 1000 ? 1000: (numPackages >= 500 ? 500 : 0));
+        int times = 5000 - (numCustomers >= 30 ? 1000 : (numCustomers >= 15 ? 500 : 0)) - (numPackages >= 1000 ? 1000: (numPackages >= 500 ? 500 : 0));
         int numSolutions = 40 - (numCustomers >= 30 ? 10 : (numCustomers >= 15 ? 5 : 0)) - (numPackages >= 1000 ? 10 : (numPackages >= 500 ? 5 : 0));
-        int kBest = 10 - (numCustomers >= 30 ? 4 : (numCustomers >= 15 ? 2 : 0));
+        int kBest = 15 - (numCustomers >= 30 ? 4 : (numCustomers >= 15 ? 2 : 0));
 
         Map<String, Integer> params = new HashMap<>();
         params.put("times", times);
